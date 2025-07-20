@@ -15,7 +15,11 @@
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
  <link rel="stylesheet" href="css/index.css">
-  
+  <!-- jQuery UI CSS -->
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+<!-- jQuery UI JS -->
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+
 
 </head>
 <body>
@@ -221,52 +225,54 @@ modal.show();
     }
 
 
-$('#search-bar').on('keyup', function () {
-  const query = $(this).val().trim();
 
-  if (query === '') {
-    // If the search bar is empty, show all items
-    renderItems(allItems);
-    return;
-  }
+  </script>
 
-  $.ajax({
-    url: `/api/v1/items/search?q=${encodeURIComponent(query)}`,
-    method: 'GET',
-    dataType: 'json',
-    success: function (response) {
-      console.log('🔎 API search results:', response);
 
-      // ✅ Use whatever filtered array your backend returns
-      if (response && response.data) {
-        renderItems(response.data);     // ← filtered items from API
-      } else if (response && response.result) {
-        renderItems(response.result);   // ← filtered items from API
-      } else if (Array.isArray(response)) {
-        renderItems(response);          // ← filtered items from API
-      } else {
-        renderItems([]);                // ← nothing found
-      }
+
+
+ <script>
+$(function () {
+  $('#search-bar').autocomplete({
+    minLength: 1,
+    source: function (request, response) {
+      $.ajax({
+        url: '/api/v1/items/search',
+        data: { q: request.term },
+        success: function (res) {
+          if (res.success) {
+            response(res.data.map(item => ({
+              label: `${item.pname} - ₱${item.sell_price}`,
+              value: item.pname,
+              fullData: item
+            })));
+
+            // Save to global items array
+            allItems = res.data;
+          } else {
+            response([]);
+          }
+        },
+        error: function () {
+          response([]);
+        }
+      });
     },
-    error: function (xhr, status, error) {
-      console.error('Search error:', error);
-      $('#item-container').html('<p class="text-danger">Search failed. Please try again.</p>');
+    select: function (event, ui) {
+      $('#search-bar').val(ui.item.value);
+      filterItems('All'); 
+      return false;
     }
+  });
+
+  // 🔽 Place this right after autocomplete
+  $('#search-bar').on('keyup', function () {
+    filterItems('All'); // Trigger filter while typing
   });
 });
 
-
-//  $('#search-bar').on('keyup', function () {
-//       const searchTerm = $(this).val().toLowerCase();
-//  const filtered = allItems.filter(item =>
-//         (item.pname && item.pname.toLowerCase().includes(searchTerm)) ||
-//         (item.description && item.description.toLowerCase().includes(searchTerm))
-//       );
-
-//       renderItems(filtered);
-//     });
+</script>
 
 
-  </script>
 </body>
 </html>

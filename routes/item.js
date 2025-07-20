@@ -16,7 +16,7 @@ router.get('/items', getAllItems);
 router.get('/items/:id', getSingleItem)
 router.get('/categories', getCategories);
 router.get('/items/:id/details', getItemWithReviews);
-router.get('/items/search',searchItems);
+router.get('/items/search', searchItems);
 
 router.get('/items',isAuthenticatedUser,authorizeRoles('admin'),  getAllItems)
 router.post('/items',isAuthenticatedUser,authorizeRoles('admin'), upload.array('image', 10), createItem);

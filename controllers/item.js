@@ -263,7 +263,7 @@ exports.getItemWithReviews = (req, res) => {
 
 // ✅ Search items by name or description
 exports.searchItems = (req, res) => {
-  const keyword = req.query.q || ''; // e.g. /api/v1/items/search?q=coffee
+  const keyword = req.query.q || '';
 
   if (!keyword) {
     return res.status(400).json({ error: 'Missing search query (?q=)' });

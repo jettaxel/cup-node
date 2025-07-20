@@ -17,7 +17,6 @@ app.use('/images', express.static(path.join(__dirname, 'images')))
 app.use(express.static(path.join(__dirname, '/cup-jquery')));
 app.use('/api/v1', reviewRoutes);
 
-
 app.use('/api/v1/orders', order);
 app.use('/api/v1', chartRoutes);
 app.use('/api/v1/', items);
